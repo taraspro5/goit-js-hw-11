@@ -14,7 +14,7 @@ const options = {
   rootMargin: '300px',
 };
 const observer = new IntersectionObserver(handlerLoad, options);
-var lightbox = new SimpleLightbox('.gallery a', {
+let lightbox = new SimpleLightbox('.photo-card a', {
   captionDelay: 250,
   captionsData: 'alt',
 });
@@ -28,6 +28,7 @@ async function handlerSubmit(evt) {
     const object = await serviceImage(page);
     console.log(object);
     if (!object.data.hits.length) {
+      container.innerHTML = '';
       throw new Error();
     }
     totalToEnd = object.data.totalHits;
@@ -35,6 +36,7 @@ async function handlerSubmit(evt) {
     container.innerHTML = '';
     container.insertAdjacentHTML('beforeend', createMarkup(object.data.hits));
     observer.observe(guard);
+    lightbox.refresh();
   } catch (err) {
     Notiflix.Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
@@ -71,20 +73,24 @@ function createMarkup(arr) {
       <a class="photo-link" href=${largeImageURL}>
       <img src="${webformatURL}" alt="${tags}" loading="lazy" />
       </a>
-      <div class="info">
-        <p class="info-item">
-          <b>Likes ${likes}</b>
-        </p>
-        <p class="info-item">
-          <b>Views ${views}</b>
-        </p>
-        <p class="info-item">
-          <b>Comments ${comments}</b>
-        </p>
-        <p class="info-item">
-          <b>Downloads ${downloads}</b>
-        </p>
-      </div>
+      <ul class="info">
+        <li class="info-item">
+          <b>Likes</b>
+          ${likes}
+        </li>
+        <li class="info-item">
+          <b>Views</b>
+          ${views}
+        </li>
+        <li class="info-item">
+          <b>Comments</b>
+          ${comments}
+        </li>
+        <li class="info-item">
+          <b>Downloads</b>
+          ${downloads}
+        </li>
+      </ul>
     </div>`
     )
     .join('');
@@ -103,6 +109,7 @@ async function handlerLoad(entries) {
       }
       const object = await serviceImage(page);
       container.insertAdjacentHTML('beforeend', createMarkup(object.data.hits));
+      lightbox.refresh();
     }
   });
 }

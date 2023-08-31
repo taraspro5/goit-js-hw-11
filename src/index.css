@@ -1,0 +1,56 @@
+:root {
+  --timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-duration: 250ms;
+}
+
+img {
+  display: block;
+  height: 300px;
+  width: 100%;
+  object-fit: cover;
+}
+
+.search-form {
+  position: sticky;
+  top: 0;
+  background-color: rgba(0, 97, 0, 0.62);
+  padding-top: 15px;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+input {
+  padding: 4px;
+}
+
+button {
+  padding: 4px;
+}
+
+.info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+}
+
+.info-item {
+  list-style: none;
+  text-align: center;
+}
+
+.gallery {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.photo-card {
+  flex-basis: calc(25% - 32px);
+  background-color: rgb(240, 253, 240);
+  box-shadow: 0px 2px 1px rgba(46, 66, 49, 0.08),
+    0px 1px 1px rgba(46, 47, 66, 0.16), 0px 1px 6px rgba(46, 47, 66, 0.08);
+}
