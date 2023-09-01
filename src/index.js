@@ -1,3 +1,5 @@
+import { createMarkup } from './common/commonMarkup';
+import { serviceImage } from './common/imageApi';
 import axios from 'axios';
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
@@ -26,7 +28,6 @@ async function handlerSubmit(evt) {
     evt.preventDefault();
     page = 1;
     const object = await serviceImage(page);
-    console.log(object);
     if (!object.data.hits.length) {
       container.innerHTML = '';
       throw new Error();
@@ -44,58 +45,6 @@ async function handlerSubmit(evt) {
   }
 }
 
-async function serviceImage(currentPage = '1') {
-  const params = new URLSearchParams({
-    key: '39156572-72d7647317d1c76660d8c9d12',
-    q: searchQuery.value,
-    image_type: 'photo',
-    orientation: 'horizontal',
-    safesearch: 'true',
-    page: currentPage,
-    per_page: 40,
-  });
-
-  return await axios.get(`https://pixabay.com/api/?${params}`);
-}
-
-function createMarkup(arr) {
-  return arr
-    .map(
-      ({
-        webformatURL,
-        largeImageURL,
-        tags,
-        likes,
-        views,
-        comments,
-        downloads,
-      }) => `<div class="photo-card">
-      <a class="photo-link" href=${largeImageURL}>
-      <img src="${webformatURL}" alt="${tags}" loading="lazy" />
-      </a>
-      <ul class="info">
-        <li class="info-item">
-          <b>Likes</b>
-          ${likes}
-        </li>
-        <li class="info-item">
-          <b>Views</b>
-          ${views}
-        </li>
-        <li class="info-item">
-          <b>Comments</b>
-          ${comments}
-        </li>
-        <li class="info-item">
-          <b>Downloads</b>
-          ${downloads}
-        </li>
-      </ul>
-    </div>`
-    )
-    .join('');
-}
-
 async function handlerLoad(entries) {
   entries.forEach(async entry => {
     if (entry.isIntersecting) {
@@ -107,7 +56,7 @@ async function handlerLoad(entries) {
           "We're sorry, but you've reached the end of search results."
         );
       }
-      const object = await serviceImage(page);
+      const data = await serviceImage(page);
       container.insertAdjacentHTML('beforeend', createMarkup(object.data.hits));
       lightbox.refresh();
     }
