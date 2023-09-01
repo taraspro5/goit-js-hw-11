@@ -1,9 +1,8 @@
-import { createMarkup } from './common/commonMarkup';
-import { serviceImage } from './common/imageApi';
-import axios from 'axios';
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import { createMarkup } from './common/commonMarkup';
+import { serviceImage } from './common/imageApi';
 
 const form = document.querySelector('.search-form');
 const container = document.querySelector('.gallery');
@@ -16,6 +15,7 @@ const options = {
   rootMargin: '300px',
 };
 const observer = new IntersectionObserver(handlerLoad, options);
+
 let lightbox = new SimpleLightbox('.photo-card a', {
   captionDelay: 250,
   captionsData: 'alt',
@@ -26,19 +26,25 @@ form.addEventListener('submit', handlerSubmit);
 async function handlerSubmit(evt) {
   try {
     evt.preventDefault();
-    page = 1;
-    const object = await serviceImage(page);
-    if (!object.data.hits.length) {
+    if (!searchQuery.value.trim()) {
       container.innerHTML = '';
       throw new Error();
     }
-    totalToEnd = object.data.totalHits;
-    Notiflix.Notify.success(`"Hooray! We found ${totalToEnd} images."`);
+    page = 1;
+    const data = await serviceImage(page, searchQuery.value.trim());
+    if (!data.hits.length) {
+      container.innerHTML = '';
+      throw new Error();
+    }
+    totalToEnd = data.totalHits;
+    totalToEnd /= 40;
+    Notiflix.Notify.success(`"Hooray! We found ${data.totalHits} images."`);
     container.innerHTML = '';
-    container.insertAdjacentHTML('beforeend', createMarkup(object.data.hits));
+    container.insertAdjacentHTML('beforeend', createMarkup(data.hits));
     observer.observe(guard);
     lightbox.refresh();
   } catch (err) {
+    observer.unobserve(guard);
     Notiflix.Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
     );
@@ -49,15 +55,14 @@ async function handlerLoad(entries) {
   entries.forEach(async entry => {
     if (entry.isIntersecting) {
       page++;
-      totalToEnd -= 40;
-      if (totalToEnd <= 0) {
+      if (totalToEnd <= page) {
         observer.unobserve(guard);
         Notiflix.Notify.info(
           "We're sorry, but you've reached the end of search results."
         );
       }
-      const data = await serviceImage(page);
-      container.insertAdjacentHTML('beforeend', createMarkup(object.data.hits));
+      const { hits } = await serviceImage(page, searchQuery.value);
+      container.insertAdjacentHTML('beforeend', createMarkup(hits));
       lightbox.refresh();
     }
   });

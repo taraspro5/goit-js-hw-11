@@ -1,7 +1,9 @@
-async function serviceImage(currentPage = '1') {
+import axios from 'axios';
+
+async function serviceImage(currentPage = '1', inputValue) {
   const params = new URLSearchParams({
     key: '39156572-72d7647317d1c76660d8c9d12',
-    q: searchQuery.value,
+    q: inputValue,
     image_type: 'photo',
     orientation: 'horizontal',
     safesearch: 'true',
@@ -9,7 +11,9 @@ async function serviceImage(currentPage = '1') {
     per_page: 40,
   });
 
-  return await axios.get(`https://pixabay.com/api/?${params}`);
+  return await axios
+    .get(`https://pixabay.com/api/?${params}`)
+    .then(res => res.data);
 }
 
 export { serviceImage };
