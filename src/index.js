@@ -1,8 +1,8 @@
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import { createMarkup } from './common/commonMarkup';
-import { serviceImage } from './common/imageApi';
+import { createMarkup } from './js/commonMarkup';
+import { serviceImage } from './js/imageApi';
 
 const form = document.querySelector('.search-form');
 const container = document.querySelector('.gallery');
